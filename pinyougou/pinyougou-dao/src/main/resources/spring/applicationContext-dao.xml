@@ -29,8 +29,21 @@
         <!--  配置实体类别名  -->
         <property name="typeAliasesPackage" value="com.pinyougou.pojo"/>
     </bean>
-    <!--  扫描 mapper -->
+<!--
+    &lt;!&ndash;  扫描 mapper &ndash;&gt;
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
         <property name="basePackage" value="com.pinyougou.mapper"/>
     </bean>
+-->
+    <bean class="tk.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!--指定业务mapper（我们自己写的Mapper）所在的包路径-->
+        <property name="basePackage" value="com.pinyougou.mapper"/>
+        <property name="properties">
+            <value>
+                <!--mappers=tk.mybatis.mapper.common.Mapper-->
+                mappers=tk.mybatis.mapper.common.Mapper
+            </value>
+        </property>
+    </bean>
+
 </beans>

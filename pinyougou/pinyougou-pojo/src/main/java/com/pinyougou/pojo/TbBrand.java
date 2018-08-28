@@ -1,9 +1,6 @@
 package com.pinyougou.pojo;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 
 @Table(name = "tb_brand")
@@ -15,6 +12,8 @@ public class TbBrand implements Serializable {
 
     private String name;
 
+    //在数据表字段与属性名称不一样的时候使用，默认不使用
+    @Column(name = "first_char")
     private String firstChar;
 
     private static final long serialVersionUID = 1L;
