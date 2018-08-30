@@ -14,7 +14,7 @@ public interface BaseService<T> {
      * @param id 主键
      * @return 实体对象
      */
-    T findById(Serializable id);
+    T findOne(Serializable id);
 
     /**
      * 查询全部
@@ -65,5 +65,6 @@ public interface BaseService<T> {
      * 批量删除
      * @param ids 主键集合
      */
+
     void deleteByIds(Serializable[] ids);
 }

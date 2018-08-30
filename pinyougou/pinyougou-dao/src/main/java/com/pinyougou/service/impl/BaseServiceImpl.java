@@ -23,7 +23,7 @@ public class BaseServiceImpl<T> implements BaseService<T> {
      * @return 实体对象
      */
     @Override
-    public T findById(Serializable id) {
+    public T findOne(Serializable id) {
         return mapper.selectByPrimaryKey(id);
     }
 
