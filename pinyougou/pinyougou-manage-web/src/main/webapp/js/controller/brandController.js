@@ -108,7 +108,6 @@ app.controller("brandController", function ($scope, $http, $controller, brandSer
     };
 });
 
-/*
 
 //注册处理器
 app.controller("brandController", function ($scope, $http, $controller, brandService) {
@@ -212,5 +211,4 @@ app.controller("brandController", function ($scope, $http, $controller, brandSer
         });
     };
 });
-*/
 

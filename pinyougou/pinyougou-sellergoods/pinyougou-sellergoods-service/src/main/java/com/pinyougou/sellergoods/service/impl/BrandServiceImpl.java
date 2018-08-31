@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.List;
+import java.util.Map;
 
 @Service(interfaceClass = BrandService.class)
 public class BrandServiceImpl extends BaseServiceImpl<TbBrand> implements BrandService {
@@ -55,21 +56,10 @@ public class BrandServiceImpl extends BaseServiceImpl<TbBrand> implements BrandS
         return new PageResult(pageInfo.getTotal(), pageInfo.getList());
     }
 
-    /*@Override
-    public PageResult search(TbBrand brand, Integer page, Integer rows) {
-//设置分页
-        PageHelper.startPage(page, rows);
-//设置查询条件
-        Example example = new Example(TbBrand.class);
-        Example.Criteria criteria = example.createCriteria();
-        if (!StringUtils.isEmpty(brand.getFirstChar())) {
-            criteria.andEqualTo("firstChar", brand.getFirstChar());
-        }
-        if (!StringUtils.isEmpty(brand.getName())) {
-            criteria.andLike("name", "%" + brand.getName() + "%");
-        }
-        List<TbBrand> list = brandMapper.selectByExample(example);
-        PageInfo<TbBrand> pageInfo = new PageInfo<>(list);
-        return new PageResult(pageInfo.getTotal(), pageInfo.getList());
-    }*/
+    @Override
+    public List<Map<String, Object>> selectOptionList() {
+        return brandMapper.selectOptionList();
+    }
+
+
 }
