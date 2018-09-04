@@ -68,8 +68,8 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
         goods.getGoodsDesc().setGoodsId(goods.getGoods().getId());
         goodsDescMapper.insertSelective(goods.getGoodsDesc());
 
-        //保存商品SKU列表
-        //saveItemList(goods);
+        //3、保存商品SKU列表
+        saveItemList(goods);
 
 
         //3、新增商品SKU列表
@@ -117,5 +117,76 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
 
             }
         }
+    }
+
+    private void saveItemList(Goods goods) {
+
+        //如果是不启用规格：应该根据商品基本信息生成一条sku数据保存到tb_item中；
+        // 因为tb_item才是以后展示在页面中让用户购买的商品；
+        // 在页面中entity.goods.isEnableSpec的值为0；如果启动则为1
+        if ("1".equals(goods.getGoods().getIsEnableSpec())) {
+            if (goods.getItemList() != null && goods.getItemList().size() > 0) {
+                for (TbItem item: goods.getItemList()) {
+                    //商品的标题应该为：spu商品名称+所有规格选项值
+                    String title = goods.getGoods().getGoodsName();
+
+                    //将sku对于的规格及选项数据转换为一个map;获取对应规格的选项
+                    Map<String, Object> map = JSON.parseObject(item.getSpec());
+                    Set<Entry<String, Object>> entries = map.entrySet();
+                    for (Entry entry: entries) {
+                        title += " " + entry.getValue();
+                    }
+                    item.setTitle(title);
+
+                    setItemValue(item, goods);
+                    //保存tbItem
+                    itemMapper.insertSelective(item);
+                }
+            }
+        } else {
+            //不启用规格
+            TbItem item = new TbItem();
+
+            item.setPrice(goods.getGoods().getPrice());
+            item.setNum(9999);
+            item.setIsDefault("1");//表示默认
+            item.setStatus("0");//未审核
+
+            item.setTitle(goods.getGoods().getGoodsName());
+            setItemValue(item, goods);
+
+            itemMapper.insertSelective(item);
+        }
+    }
+
+    private void setItemValue(TbItem item, Goods goods) {
+        //查询品牌
+        TbBrand brand = brandMapper.selectByPrimaryKey(goods.getGoods().getBrandId());
+        item.setBrand(brand.getName());
+
+        //商品分类第3级的中文名称
+        TbItemCat itemCat = itemCatMapper.selectByPrimaryKey(goods.getGoods().getCategory3Id());
+        item.setCategory(itemCat.getName());
+        //商品分类id
+        item.setCategoryid(itemCat.getId());
+
+        item.setCreateTime(new Date());
+        item.setGoodsId(goods.getGoods().getId());
+
+        //获取spu的第一张图片
+        if (!StringUtils.isEmpty(goods.getGoodsDesc().getItemImages())) {
+            //将图片json格式字符串转换为一个Json对象
+            List<Map> images = JSONArray.parseArray(goods.getGoodsDesc().getItemImages(), Map.class);
+
+            item.setImage(images.get(0).toString());
+        }
+
+        //设置商家数据
+        TbSeller seller = sellerMapper.selectByPrimaryKey(goods.getGoods().getSellerId());
+
+        item.setSeller(seller.getName());
+        item.setSellerId(seller.getSellerId());
+
+        item.setUpdateTime(item.getCreateTime());
     }
 }
