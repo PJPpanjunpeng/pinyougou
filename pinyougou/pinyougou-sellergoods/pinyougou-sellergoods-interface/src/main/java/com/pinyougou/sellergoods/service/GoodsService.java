@@ -9,5 +9,5 @@ public interface GoodsService extends BaseService<TbGoods> {
 
     PageResult search(Integer page, Integer rows, TbGoods goods);
 
-    void addGoos(Goods goods);
+    void addGoods(Goods goods);
 }

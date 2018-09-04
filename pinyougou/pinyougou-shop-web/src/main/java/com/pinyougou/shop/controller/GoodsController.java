@@ -37,7 +37,7 @@ public class GoodsController {
             goods.getGoods().setSellerId(sellerId);
             goods.getGoods().setAuditStatus("0");//未审核状态
 
-            goodsService.addGoos(goods);
+            goodsService.addGoods(goods);
 
             return Result.ok("增加成功");
         } catch (Exception e) {
