@@ -45,13 +45,22 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
 
     @Override
     public PageResult search(Integer page, Integer rows, TbGoods goods) {
+
         PageHelper.startPage(page, rows);
 
         Example example = new Example(TbGoods.class);
         Example.Criteria criteria = example.createCriteria();
-        /*if(!StringUtils.isEmpty(goods.get***())){
-            criteria.andLike("***", "%" + goods.get***() + "%");
-        }*/
+
+        //商家限定
+        if(!StringUtils.isEmpty(goods.getSellerId())){
+            criteria.andEqualTo("sellerId",  goods.getSellerId());
+        }
+        if(!StringUtils.isEmpty(goods.getAuditStatus())){
+            criteria.andEqualTo("auditStatus",  goods.getAuditStatus());
+        }
+        if(!StringUtils.isEmpty(goods.getGoodsName())){
+            criteria.andLike("goodsName", "%" + goods.getGoodsName() + "%");
+        }
 
         List<TbGoods> list = goodsMapper.selectByExample(example);
         PageInfo<TbGoods> pageInfo = new PageInfo<>(list);
@@ -121,9 +130,11 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
 
     private void saveItemList(Goods goods) {
 
-        //如果是不启用规格：应该根据商品基本信息生成一条sku数据保存到tb_item中；
-        // 因为tb_item才是以后展示在页面中让用户购买的商品；
-        // 在页面中entity.goods.isEnableSpec的值为0；如果启动则为1
+        /**
+         * 如果是不启用规格：应该根据商品基本信息生成一条sku数据保存到tb_item中；
+         * 因为tb_item才是以后展示在页面中让用户购买的商品；
+         * 在页面中entity.goods.isEnableSpec的值为0；如果启动则为1
+         */
         if ("1".equals(goods.getGoods().getIsEnableSpec())) {
             if (goods.getItemList() != null && goods.getItemList().size() > 0) {
                 for (TbItem item: goods.getItemList()) {
