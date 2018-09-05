@@ -3,6 +3,7 @@ package com.pinyougou.sellergoods.service.impl;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.ctc.wstx.sr.ElemCallback;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.pinyougou.mapper.*;
@@ -68,6 +69,10 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
         return new PageResult(pageInfo.getTotal(), pageInfo.getList());
     }
 
+    /**
+     * 新增商品
+     * @param goods
+     */
     @Override
     public void addGoods(Goods goods) {
         //1、保存基本信息；在mybatis中如果在保存成功后主键可以回填到保存时候的那个对象中
@@ -82,7 +87,7 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
 
 
         //3、新增商品SKU列表
-        if (goods.getItemList() != null && goods.getItemList().size() > 0) {
+        /*if (goods.getItemList() != null && goods.getItemList().size() > 0) {
             for (TbItem item : goods.getItemList()) {
                 String title = goods.getGoods().getGoodsName();
 
@@ -125,9 +130,12 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
                 itemMapper.insertSelective(item);
 
             }
-        }
+        }*/
     }
 
+    /**
+     * 方法抽取（3.保存商品SKU列表：是否启用规格）
+     */
     private void saveItemList(Goods goods) {
 
         /**
@@ -170,6 +178,10 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
         }
     }
 
+
+
+
+
     private void setItemValue(TbItem item, Goods goods) {
         //查询品牌
         TbBrand brand = brandMapper.selectByPrimaryKey(goods.getGoods().getBrandId());
@@ -200,4 +212,58 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
 
         item.setUpdateTime(item.getCreateTime());
     }
+
+
+    /**
+     * 商品修改
+     * 1.商品基本信息，描述信息，sku列表回显
+     * @param id
+     * @return
+     */
+    @Override
+    public Goods findGoodsById(Long id) {
+        Goods goods = new Goods();
+        //查询商品SPU
+        TbGoods tbGoods = goodsMapper.selectByPrimaryKey(id);
+        goods.setGoods(tbGoods);
+
+        //查询商品描述
+        TbGoodsDesc tbGoodsDesc = goodsDescMapper.selectByPrimaryKey(id);
+        goods.setGoodsDesc(tbGoodsDesc);
+
+        //查询商品SKU列表
+        Example example = new Example(TbItem.class);
+        example.createCriteria().andEqualTo("goodsId",id);
+        List<TbItem> itemList = itemMapper.selectByExample(example);
+        goods.setItemList(itemList);
+
+        return goods;
+    }
+
+    /**
+     * 商品修改
+     * 2.保存修改
+     * @param goods
+     */
+    @Override
+    public void updateGoods(Goods goods) {
+        //更新商品信息
+        //修改过则重新设置未审核
+        goods.getGoods().setAuditStatus("0");
+        goodsMapper.updateByPrimaryKeySelective(goods.getGoods());
+
+        //更新商品描述信息
+        goodsDescMapper.updateByPrimaryKeySelective(goods.getGoodsDesc());
+
+        //删除原有的SKU列表，防止数据冗沉
+        TbItem param = new TbItem();
+        param.setGoodsId(goods.getGoods().getId());
+        itemMapper.delete(param);
+
+        //调用方法，保存商品SKU数据
+        saveItemList(goods);
+
+    }
+
+
 }
