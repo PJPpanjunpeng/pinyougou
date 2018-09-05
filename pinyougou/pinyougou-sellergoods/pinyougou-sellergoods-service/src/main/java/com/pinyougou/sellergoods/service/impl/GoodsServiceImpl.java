@@ -80,7 +80,8 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
     public void addGoods(Goods goods) {
         //1、保存基本信息；在mybatis中如果在保存成功后主键可以回填到保存时候的那个对象中
         goodsMapper.insertSelective(goods.getGoods());
-        
+
+        //int x=1/0;
 
         //2、新增商品描述信息
         goods.getGoodsDesc().setGoodsId(goods.getGoods().getId());
