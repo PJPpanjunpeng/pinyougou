@@ -12,6 +12,7 @@ import com.pinyougou.sellergoods.service.GoodsService;
 import com.pinyougou.service.impl.BaseServiceImpl;
 import com.pinyougou.vo.Goods;
 import com.pinyougou.vo.PageResult;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import tk.mybatis.mapper.entity.Example;
@@ -48,6 +49,9 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
 
         Example example = new Example(TbGoods.class);
         Example.Criteria criteria = example.createCriteria();
+
+        //不查询删除状态的商品
+        criteria.andNotEqualTo("isDelete", "1");
 
         //商家限定
         if(!StringUtils.isEmpty(goods.getSellerId())){
@@ -293,6 +297,23 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
 
         }
 
+    }
+
+    /**
+     * 在运营商管理后台中删除商品是“逻辑删除”
+     * 也就是修改 tb_goods 表的 is_delete字段为 1。
+     * @param ids
+     */
+    @Override
+    public void deleteGoodsByIds(Long[] ids) {
+        TbGoods goods = new TbGoods();
+        goods.setIsDelete("1");
+
+        Example example = new Example(TbGoods.class);
+        example.createCriteria().andIn("id",Arrays.asList(ids));
+
+        //批量更新商品的删除状态为删除
+        goodsMapper.updateByExampleSelective(goods, example);
     }
 
 
