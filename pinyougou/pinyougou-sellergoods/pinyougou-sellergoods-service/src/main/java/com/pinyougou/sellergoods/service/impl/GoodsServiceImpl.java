@@ -56,13 +56,13 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
         criteria.andNotEqualTo("isDelete", "1");
 
         //商家限定
-        if(!StringUtils.isEmpty(goods.getSellerId())){
-            criteria.andEqualTo("sellerId",  goods.getSellerId());
+        if (!StringUtils.isEmpty(goods.getSellerId())) {
+            criteria.andEqualTo("sellerId", goods.getSellerId());
         }
-        if(!StringUtils.isEmpty(goods.getAuditStatus())){
-            criteria.andEqualTo("auditStatus",  goods.getAuditStatus());
+        if (!StringUtils.isEmpty(goods.getAuditStatus())) {
+            criteria.andEqualTo("auditStatus", goods.getAuditStatus());
         }
-        if(!StringUtils.isEmpty(goods.getGoodsName())){
+        if (!StringUtils.isEmpty(goods.getGoodsName())) {
             criteria.andLike("goodsName", "%" + goods.getGoodsName() + "%");
         }
 
@@ -74,6 +74,7 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
 
     /**
      * 新增商品
+     *
      * @param goods
      */
     @Override
@@ -103,14 +104,14 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
          */
         if ("1".equals(goods.getGoods().getIsEnableSpec())) {
             if (goods.getItemList() != null && goods.getItemList().size() > 0) {
-                for (TbItem item: goods.getItemList()) {
+                for (TbItem item : goods.getItemList()) {
                     //商品的标题应该为：spu商品名称+所有规格选项值
                     String title = goods.getGoods().getGoodsName();
 
                     //将sku对于的规格及选项数据转换为一个map;获取对应规格的选项
                     Map<String, Object> map = JSON.parseObject(item.getSpec());
                     Set<Entry<String, Object>> entries = map.entrySet();
-                    for (Entry entry: entries) {
+                    for (Entry entry : entries) {
                         title += " " + entry.getValue();
                     }
                     item.setTitle(title);
@@ -135,9 +136,6 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
             itemMapper.insertSelective(item);
         }
     }
-
-
-
 
 
     private void setItemValue(TbItem item, Goods goods) {
@@ -175,6 +173,7 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
     /**
      * 商品修改
      * 1.商品基本信息，描述信息，sku列表回显
+     *
      * @param id
      * @return
      */
@@ -191,7 +190,7 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
 
         //查询商品SKU列表
         Example example = new Example(TbItem.class);
-        example.createCriteria().andEqualTo("goodsId",id);
+        example.createCriteria().andEqualTo("goodsId", id);
         List<TbItem> itemList = itemMapper.selectByExample(example);
         goods.setItemList(itemList);
 
@@ -201,6 +200,7 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
     /**
      * 商品修改
      * 2.保存修改
+     *
      * @param goods
      */
     @Override
@@ -225,6 +225,7 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
 
     /**
      * 提交审核申请，更新商品状态
+     *
      * @param ids
      * @param status
      */
@@ -259,6 +260,7 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
     /**
      * 在运营商管理后台中删除商品是“逻辑删除”
      * 也就是修改 tb_goods 表的 is_delete字段为 1。
+     *
      * @param ids
      */
     @Override
@@ -267,11 +269,69 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
         goods.setIsDelete("1");
 
         Example example = new Example(TbGoods.class);
-        example.createCriteria().andIn("id",Arrays.asList(ids));
+        example.createCriteria().andIn("id", Arrays.asList(ids));
 
         //批量更新商品的删除状态为删除
         goodsMapper.updateByExampleSelective(goods, example);
     }
+
+
+    /**
+     * 上架或者下架
+     *
+     * @param ids
+     * @param status
+     */
+    @Override
+    public void updownStatus(Long[] ids, String status) throws Exception {
+
+        TbGoods goods = new TbGoods();
+
+        for (Long id : ids) {
+            TbGoods oneGoods = findOne(id);
+            if ("1".equals(status)) {
+                if ("2".equals(oneGoods.getAuditStatus())) {
+                    goods.setIsMarketable("1");
+                } else {
+                    throw new Exception("有未通过审核商品，请确认");
+                }
+            } else {
+                if ("2".equals(oneGoods.getAuditStatus()) && "1".equals(oneGoods.getIsMarketable())) {
+                    goods.setIsMarketable("0");
+                } else {
+                    throw new Exception("有未上架商品，请确认");
+                }
+        }
+    }
+
+
+
+        /*for (Long id: ids) {
+            TbGoods oneGoods = findOne(id);
+            if ("0".equals(oneGoods.getAuditStatus())){
+                int i= 1/0;
+            } else if ("2".equals(oneGoods.getAuditStatus())) {
+                if ("1".equals(status)) {
+                    goods.setIsMarketable("1");
+                } else {
+                    int i = 1/0;
+                }
+            } else {
+                if ("0".equals(status)) {
+                    goods.setIsMarketable("0");
+                } else {
+                    int i = 1/0;
+                }
+            }
+        }*/
+
+    Example example = new Example(TbGoods.class);
+        example.createCriteria().
+
+    andIn("id",Arrays.asList(ids));
+    //批量更新商品的上下架状态
+        goodsMapper.updateByExampleSelective(goods,example);
+}
 
 
 }

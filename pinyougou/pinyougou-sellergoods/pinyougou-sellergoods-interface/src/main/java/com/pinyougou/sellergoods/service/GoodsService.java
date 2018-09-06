@@ -18,4 +18,6 @@ public interface GoodsService extends BaseService<TbGoods> {
     void updateStatus(Long[] ids, String status);
 
     void deleteGoodsByIds(Long[] ids);
+
+    void updownStatus(Long[] ids, String status) throws Exception;
 }

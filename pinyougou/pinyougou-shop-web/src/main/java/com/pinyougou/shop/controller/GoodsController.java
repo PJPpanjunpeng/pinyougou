@@ -111,4 +111,19 @@ public class GoodsController {
         return Result.fail("更新失败");
     }
 
+
+    /**
+     * 提交上架或下架，更新商品上架或下架状态
+     */
+    @GetMapping("/updownStatus")
+    public Result updownStatus(Long[] ids, String status) {
+        try {
+            goodsService.updownStatus(ids, status);
+            return Result.ok("更新成功");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Result.fail("更新失败");
+    }
+
 }
