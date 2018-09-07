@@ -301,37 +301,13 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
                 } else {
                     throw new Exception("有未上架商品，请确认");
                 }
-        }
-    }
-
-
-
-        /*for (Long id: ids) {
-            TbGoods oneGoods = findOne(id);
-            if ("0".equals(oneGoods.getAuditStatus())){
-                int i= 1/0;
-            } else if ("2".equals(oneGoods.getAuditStatus())) {
-                if ("1".equals(status)) {
-                    goods.setIsMarketable("1");
-                } else {
-                    int i = 1/0;
-                }
-            } else {
-                if ("0".equals(status)) {
-                    goods.setIsMarketable("0");
-                } else {
-                    int i = 1/0;
-                }
             }
-        }*/
-
-    Example example = new Example(TbGoods.class);
-        example.createCriteria().
-
-    andIn("id",Arrays.asList(ids));
-    //批量更新商品的上下架状态
-        goodsMapper.updateByExampleSelective(goods,example);
-}
+        }
+        Example example = new Example(TbGoods.class);
+        example.createCriteria().andIn("id", Arrays.asList(ids));
+        //批量更新商品的上下架状态
+        goodsMapper.updateByExampleSelective(goods, example);
+    }
 
 
 }
