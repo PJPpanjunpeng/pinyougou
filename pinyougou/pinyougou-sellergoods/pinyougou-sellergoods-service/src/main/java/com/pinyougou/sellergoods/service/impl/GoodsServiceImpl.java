@@ -308,6 +308,4 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
         //批量更新商品的上下架状态
         goodsMapper.updateByExampleSelective(goods, example);
     }
-
-
 }
