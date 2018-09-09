@@ -3,14 +3,20 @@ package com.pinyougou.search.service.impl;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.pinyougou.pojo.TbItem;
 import com.pinyougou.search.service.ItemSearchService;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.core.query.Criteria;
+import org.springframework.data.solr.core.query.HighlightOptions;
+import org.springframework.data.solr.core.query.SimpleHighlightQuery;
 import org.springframework.data.solr.core.query.SimpleQuery;
+import org.springframework.data.solr.core.query.result.HighlightEntry;
+import org.springframework.data.solr.core.query.result.HighlightPage;
 import org.springframework.data.solr.core.query.result.ScoredPage;
 
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service(interfaceClass = ItemSearchService.class)//为了引用事务才说明类，这里可以不用
@@ -29,17 +35,45 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
         //创建查询对象
-        SimpleQuery query = new SimpleQuery();
+        //SimpleQuery query = new SimpleQuery();
+        //创建高亮查询对象
+        SimpleHighlightQuery query = new SimpleHighlightQuery();
 
-        //查询条件
+        //设置查询条件
         Criteria criteria = new Criteria("item_keywords").is(searchMap.get("keywords"));
         query.addCriteria(criteria);
 
+        //设置高亮域
+        HighlightOptions highlightOptions = new HighlightOptions();
+        //高亮域名称
+        highlightOptions.addField("item_title");
+
+        //设置高亮的起始标签
+        highlightOptions.setSimplePrefix("<em style='color:red'>");
+        //设置高亮的结束标签
+        highlightOptions.setSimplePostfix("</em>");
+
+        query.setHighlightOptions(highlightOptions);
+
+
         //查询
-        ScoredPage<TbItem> scoredPage = solrTemplate.queryForPage(query, TbItem.class);
+        HighlightPage<TbItem> highlightPage = solrTemplate.queryForHighlightPage(query, TbItem.class);
+
+        //获取高亮标题
+        List<HighlightEntry<TbItem>> highlighted = highlightPage.getHighlighted();
+
+        //对每个商品的标题获取高亮标题并回填
+        for (TbItem item: highlightPage.getContent()) {
+            for (HighlightEntry<TbItem> entry: highlighted) {
+                if (entry.getHighlights() != null && entry.getHighlights().get(0).getSnipplets() != null){
+                    item.setTitle(entry.getHighlights().get(0).getSnipplets().get(0));
+                }
+            }
+        }
+
 
         //设置返回的商品列表
-        resultMap.put("rows", scoredPage.getContent());
+        resultMap.put("rows", highlightPage.getContent());
         return resultMap;
     }
 }
