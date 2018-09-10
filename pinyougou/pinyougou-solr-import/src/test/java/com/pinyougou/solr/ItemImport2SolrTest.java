@@ -46,10 +46,10 @@ public class ItemImport2SolrTest {
     }
 
     //根据条件删除
-    /*@Test
+    @Test
     public void testDeleteByQuery() {
         SimpleQuery query = new SimpleQuery("*:*");
         solrTemplate.delete(query);
         solrTemplate.commit();
-    }*/
+    }
 }
