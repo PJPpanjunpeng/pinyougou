@@ -27,6 +27,7 @@ public class ItemSearchServiceImpl implements ItemSearchService {
 
     /**
      * 根据搜索关键字搜索商品列表
+     *
      * @param searchMap 搜索条件
      * @return 搜索结果
      */
@@ -63,14 +64,12 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         List<HighlightEntry<TbItem>> highlighted = highlightPage.getHighlighted();
 
         //对每个商品的标题获取高亮标题并回填
-        for (TbItem item: highlightPage.getContent()) {
-            for (HighlightEntry<TbItem> entry: highlighted) {
-                if (entry.getHighlights() != null && entry.getHighlights().get(0).getSnipplets() != null){
-                    item.setTitle(entry.getHighlights().get(0).getSnipplets().get(0));
-                }
+
+        for (HighlightEntry<TbItem> entry : highlighted) {
+            if (entry.getHighlights() != null && entry.getHighlights().get(0).getSnipplets() != null) {
+                entry.getEntity().setTitle(entry.getHighlights().get(0).getSnipplets().get(0));
             }
         }
-
 
         //设置返回的商品列表
         resultMap.put("rows", highlightPage.getContent());

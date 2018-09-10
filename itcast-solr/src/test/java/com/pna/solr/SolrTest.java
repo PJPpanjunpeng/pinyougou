@@ -18,7 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.SimpleTimeZone;
 
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringJUnit4ClassRunner.class) //让测试运行于Spring测试环境
 @ContextConfiguration(locations = "classpath:spring/applicationContext-solr.xml")
 public class SolrTest {
 
