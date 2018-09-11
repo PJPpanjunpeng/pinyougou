@@ -26,6 +26,11 @@ public class ItemSearchServiceImpl implements ItemSearchService {
     public Map<String, Object> search(Map<String, Object> searchMap) {
         Map<String, Object> resultMap = new HashMap<String, Object>();
 
+        //处理搜索关键字中的空格问题
+        if (!StringUtils.isEmpty(searchMap.get("keywords"))) {
+            searchMap.put("keywords", searchMap.get("keywords").toString().replaceAll(" ", ""));
+        }
+
         //创建查询对象
         //SimpleQuery query = new SimpleQuery();
         //创建高亮查询对象
@@ -64,8 +69,8 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         //按照规格过滤
         if (searchMap.get("spec") != null) {
             Map<String, String> specMap = (Map<String, String>) searchMap.get("spec");
-            Set<Map.Entry<String, String>>  entries = specMap.entrySet();
-            for (Map.Entry<String, String> entry :  entries) {
+            Set<Map.Entry<String, String>> entries = specMap.entrySet();
+            for (Map.Entry<String, String> entry : entries) {
                 //在schema.xml文件中定义的域名称为：item_spec_*
                 Criteria specCriteria = new Criteria("item_spec_" + entry.getKey()).is(entry.getValue());
                 SimpleFilterQuery specFilterQuery = new SimpleFilterQuery(specCriteria);
@@ -101,7 +106,7 @@ public class ItemSearchServiceImpl implements ItemSearchService {
             rows = Integer.parseInt(searchMap.get("pageSize").toString());
         }
         //起始索引号; (当前页-1)*页大小
-        query.setOffset((page - 1)*rows);
+        query.setOffset((page - 1) * rows);
         //页大小
         query.setRows(rows);
 
@@ -123,7 +128,7 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         //设置返回的商品列表
         resultMap.put("rows", highlightPage.getContent());
         //总页数
-        resultMap.put("totalPages",  highlightPage.getTotalPages());
+        resultMap.put("totalPages", highlightPage.getTotalPages());
         //总记录数
         resultMap.put("total", highlightPage.getTotalElements());
 
