@@ -157,7 +157,7 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
             //将图片json格式字符串转换为一个Json对象
             List<Map> images = JSONArray.parseArray(goods.getGoodsDesc().getItemImages(), Map.class);
 
-            item.setImage(images.get(0).toString());
+            item.setImage(images.get(0).get("url").toString());
         }
 
         //设置商家数据
@@ -251,10 +251,7 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
             itemExample.createCriteria().andIn("goodsId", Arrays.asList(ids));
 
             itemMapper.updateByExampleSelective(item, itemExample);
-
-
         }
-
     }
 
     /**
@@ -307,5 +304,21 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
         example.createCriteria().andIn("id", Arrays.asList(ids));
         //批量更新商品的上下架状态
         goodsMapper.updateByExampleSelective(goods, example);
+    }
+
+
+    /**
+     * 根据商品SPU id集合和状态查询这些商品对应的sku商品列表
+     * @param ids 商品SPU id集合
+     * @param status sku商品状态
+     * @return sku商品列表
+     */
+    @Override
+    public List<TbItem> findItemListByGoodsIdsAndStatus(Long[] ids, String status) {
+        Example example = new Example(TbItem.class);
+        Example.Criteria criteria = example.createCriteria();
+        criteria.andEqualTo("status", status);
+        criteria.andIn("goodsId", Arrays.asList(ids));
+        return itemMapper.selectByExample(example);
     }
 }
