@@ -16,7 +16,7 @@
         <script src="js/controller/searchController.js"></script>
     </head>
 
-    <body ng-app="pinyougou" ng-controller="searchController" ng-init="">
+    <body ng-app="pinyougou" ng-controller="searchController" ng-init="loadKeywords()">
 		<!-- 头部栏位 -->
 		<!--页面顶部-->
 		<div id="nav-bottom">
@@ -78,8 +78,9 @@
 									<form action="" class="sui-form form-inline">
 										<!--searchAutoComplete-->
 										<div class="input-append">
-											<input type="text" id="autocomplete" ng-model="searchMap.keywords" type="text" class="input-error input-xxlarge" />
-											<button class="sui-btn btn-xlarge btn-danger" ng-click="searchMap.pageNo=1;search()" type="button">搜索</button>
+											<input type="text" id="autocomplete" ng-model="keywords" type="text" class="input-error input-xxlarge" />
+											<button class="sui-btn btn-xlarge btn-danger" ng-click="search()" type="button">搜索</button>
+											<!--<button class="sui-btn btn-xlarge btn-danger" ng-click="searchMap.pageNo=1;search()" type="button">搜索</button>-->
 										</div>
 									</form>
 								</div>
@@ -294,23 +295,23 @@
 				<div class="sui-navbar">
 					<div class="navbar-inner filter">
 						<ul class="sui-nav">
-							<li class="active">
-								<a href="#">综合</a>
+							<li class="{{searchMap.sortField==''?'active':''}}">
+								<a href="#" ng-click="sortSearch('','')">综合</a>
 							</li>
 							<li>
 								<a href="#">销量</a>
 							</li>
-							<li>
-								<a href="#">新品</a>
+							<li class={{searchMap.sortField=='updatetime'?'active':''}}">
+								<a href="#" ng-click="sortSearch('updatetime','DESC')">新品</a>
 							</li>
 							<li>
 								<a href="#">评价</a>
 							</li>
-							<li>
-								<a href="#">价格↑</a>
+							<li class="{{(searchMap.sortField=='price' && searchMap.sort=='ASC')?'active':''}}">
+								<a href="#" ng-click="sortSearch('price', 'ASC')">价格↑</a>
 							</li>
-							<li>
-								<a href="#">价格↓</a>
+							<li class="{{(searchMap.sortField=='price' && searchMap.sort=='DESC')?'active':''}}">
+								<a href="#" ng-click="sortSearch('price', 'DESC')">价格↓</a>
 							</li>
 						</ul>
 					</div>

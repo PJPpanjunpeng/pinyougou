@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.pinyougou.pojo.TbItem;
 import com.pinyougou.search.service.ItemSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.core.query.*;
 import org.springframework.data.solr.core.query.result.HighlightEntry;
@@ -51,6 +52,7 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         highlightOptions.setSimplePostfix("</em>");
 
         query.setHighlightOptions(highlightOptions);
+
 
         //按照分类过滤
         if (!StringUtils.isEmpty(searchMap.get("category"))) {
@@ -109,6 +111,16 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         query.setOffset((page - 1) * rows);
         //页大小
         query.setRows(rows);
+
+
+        //设置排序
+        if (!StringUtils.isEmpty(searchMap.get("sortField")) && !StringUtils.isEmpty(searchMap.get("sort"))) {
+            String sortOrder = searchMap.get("sort").toString();
+            Sort sort = new Sort(sortOrder.equals("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC,
+                    "item_" + searchMap.get("sortField").toString());
+            query.addSort(sort);
+        }
+
 
         //查询
         HighlightPage<TbItem> highlightPage = solrTemplate.queryForHighlightPage(query, TbItem.class);

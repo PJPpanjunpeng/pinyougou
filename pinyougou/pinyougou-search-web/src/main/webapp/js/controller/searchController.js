@@ -1,7 +1,7 @@
-app.controller("searchController", function ($scope, searchService) {
+app.controller("searchController", function ($scope, $location, searchService) {
 
     //定义查询对象
-    $scope.searchMap = {"keywords":"", "category":"","brand":"", "spec":{}, "price":"", "pageNo":1, "pageSize":20};
+    $scope.searchMap = {"keywords":"", "category":"","brand":"", "spec":{}, "price":"", "pageNo":1, "pageSize":20, "sortField":"", "sort":""};
 
     $scope.search = function () {
         searchService.search($scope.searchMap).success(function (response) {
@@ -13,6 +13,12 @@ app.controller("searchController", function ($scope, searchService) {
 
     };
 
+    //加载搜索关键字
+    $scope.loadKeywords = function () {
+        $scope.searchMap.keywords = $location.search()["keywords"];
+        $scope.search();
+    }
+
     //添加过滤查询条件
     $scope.addSearchItem = function (key, value) {
         if("category" == key || key == "brand" || key == "price"){
@@ -21,7 +27,7 @@ app.controller("searchController", function ($scope, searchService) {
             //规格
             $scope.searchMap.spec[key] = value;
         }
-
+        $scope.searchMap.pageNo=1;
         $scope.search();
     };
 
@@ -33,7 +39,7 @@ app.controller("searchController", function ($scope, searchService) {
             //规格
             delete $scope.searchMap.spec[key];
         }
-
+        $scope.searchMap.pageNo=1;
         $scope.search();
     };
 
@@ -102,6 +108,12 @@ app.controller("searchController", function ($scope, searchService) {
             $scope.searchMap.pageNo = pageNo;
             $scope.search();
         }
+    };
 
+    //排序搜索
+    $scope.sortSearch = function (sortField, sort) {
+        $scope.searchMap.sortField = sortField;
+        $scope.searchMap.sort = sort;
+        $scope.search();
     };
 });
