@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-@Service(interfaceClass = ItemSearchService.class)//为了引用事务才说明类，这里可以不用
+@Service
 public class ItemSearchServiceImpl implements ItemSearchService {
 
     @Autowired
@@ -66,7 +66,7 @@ public class ItemSearchServiceImpl implements ItemSearchService {
             Map<String, String> specMap = (Map<String, String>) searchMap.get("spec");
             Set<Map.Entry<String, String>>  entries = specMap.entrySet();
             for (Map.Entry<String, String> entry :  entries) {
-                //在schema.xml文件中定义的域名称为：item_spec_* --》 item_spec_网络
+                //在schema.xml文件中定义的域名称为：item_spec_*
                 Criteria specCriteria = new Criteria("item_spec_" + entry.getKey()).is(entry.getValue());
                 SimpleFilterQuery specFilterQuery = new SimpleFilterQuery(specCriteria);
                 query.addFilterQuery(specFilterQuery);
