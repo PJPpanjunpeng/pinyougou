@@ -251,7 +251,10 @@ public class GoodsServiceImpl extends BaseServiceImpl<TbGoods> implements GoodsS
             itemExample.createCriteria().andIn("goodsId", Arrays.asList(ids));
 
             itemMapper.updateByExampleSelective(item, itemExample);
+
+
         }
+
     }
 
     /**
