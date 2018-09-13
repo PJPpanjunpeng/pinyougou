@@ -12,6 +12,7 @@
         http://code.alibabatech.com/schema/dubbo/dubbo.xsd
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd">
+    <context:property-placeholder location="classpath:page.properties"/>
 
 
     <mvc:annotation-driven>
@@ -35,6 +36,7 @@
         <property name="suffix" value=".ftl"/>
         <property name="contentType" value="text/html;charset=utf-8"/>
     </bean>
+
 
     <!-- 引用 dubbo 服务 -->
     <dubbo:application name="pinyougou-item-web" />
