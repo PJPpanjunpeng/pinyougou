@@ -9,6 +9,7 @@ import com.pinyougou.vo.Goods;
 import com.pinyougou.vo.PageResult;
 import com.pinyougou.vo.Result;
 import org.apache.activemq.command.ActiveMQQueue;
+import org.apache.activemq.command.ActiveMQTopic;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.JmsException;
 import org.springframework.jms.core.JmsTemplate;
@@ -32,6 +33,9 @@ public class GoodsController {
 
     @Autowired
     private ActiveMQQueue itemSolrDeleteQueue;
+
+    @Autowired
+    private ActiveMQTopic itemTopic;
 
     @Reference
     private GoodsService goodsService;
@@ -156,6 +160,8 @@ public class GoodsController {
                     }
                 });
                 //itemSearchService.importItemList(itemList);
+                //发送商品审核通过的订阅消息
+                sendMqMsg(itemTopic, ids);
             }
             return Result.ok("更新成功");
         } catch (Exception e) {

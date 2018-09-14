@@ -39,5 +39,9 @@
         <constructor-arg value="pinyougou_item_solr_delete_queue"/>
     </bean>
 
+    <!--订阅模式，在商品审核后接收的商品主题 -->
+    <bean id="itemTopic" class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="pinyougou_item_topic"/>
+    </bean>
 
 </beans>
