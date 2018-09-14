@@ -37,6 +37,10 @@ public class GoodsController {
     @Autowired
     private ActiveMQTopic itemTopic;
 
+    @Autowired
+    private ActiveMQTopic itemDeleteTopic;
+
+
     @Reference
     private GoodsService goodsService;
 
@@ -100,8 +104,11 @@ public class GoodsController {
         try {
             goodsService.deleteGoodsByIds(ids);
             //删除solr中对应商品索引数据
-            sendMqMsg(itemSolrDeleteQueue, ids);
-            //itemSearchService.deleteItemByGoodsIdList(Arrays.asList(ids));
+            sendMQMsg(itemSolrDeleteQueue, ids);
+
+            //发送商品删除的订阅消息
+            sendMQMsg(itemDeleteTopic, ids);
+
             return Result.ok("删除成功");
         } catch (Exception e) {
             e.printStackTrace();
@@ -113,7 +120,7 @@ public class GoodsController {
      * @param destination 发送模式
      * @param ids 商品id集合
      */
-    private void sendMqMsg(Destination destination, Long[] ids) {
+    private void sendMQMsg(Destination destination, Long[] ids) {
         try {
             jmsTemplate.send(destination, new MessageCreator() {
                 @Override
@@ -161,7 +168,7 @@ public class GoodsController {
                 });
                 //itemSearchService.importItemList(itemList);
                 //发送商品审核通过的订阅消息
-                sendMqMsg(itemTopic, ids);
+                sendMQMsg(itemTopic, ids);
             }
             return Result.ok("更新成功");
         } catch (Exception e) {

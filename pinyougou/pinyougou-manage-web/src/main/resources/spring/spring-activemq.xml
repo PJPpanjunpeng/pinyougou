@@ -44,4 +44,9 @@
         <constructor-arg value="pinyougou_item_topic"/>
     </bean>
 
+    <!--订阅模式，搜索系统在商品删除后接收的商品 id 队列 -->
+    <bean id="itemDeleteTopic"
+          class="org.apache.activemq.command.ActiveMQTopic">
+        <constructor-arg value="pinyougou_item_delete_topic"/>
+    </bean>
 </beans>
