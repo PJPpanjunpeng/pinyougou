@@ -35,9 +35,9 @@ public class MQController {
     @GetMapping("/sendSms")
     public String sendSmsMsg() {
         Map<String, String> map = new HashMap<>();
-        map.put("mobile", "手机号");
-        map.put("signName", "黑马");
-        map.put("templateCode", "SMS_125018593");
+        map.put("mobile", "13827530087");
+        map.put("signName", "品优购");
+        map.put("templateCode", "SMS_144942597");
         map.put("templateParam", "{\"code\":\"123456\"}");
         jmsMessagingTemplate.convertAndSend("itcast_sms_queue", map);
 
