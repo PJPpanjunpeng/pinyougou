@@ -16,7 +16,6 @@ public class MQController {
     @Autowired
     private JmsMessagingTemplate jmsMessagingTemplate;
 
-
     @GetMapping("/send")
     public String sendMapMsg() {
         Map<String, Object> map = new HashMap<>();
