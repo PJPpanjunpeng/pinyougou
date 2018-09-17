@@ -9,6 +9,7 @@ import com.pinyougou.pojo.TbOrderItem;
 import com.pinyougou.vo.Cart;
 import com.sun.org.apache.bcel.internal.generic.IF_ACMPEQ;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -17,8 +18,14 @@ import java.util.List;
 @Service(interfaceClass = CartService.class)
 public class CartServiceImpl implements CartService {
 
+    //redis中购物车数据的key
+    private static final String REDIS_CART_LIST = "CART_LIST";
+
     @Autowired
     private ItemMapper itemMapper;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     /**
      * 1、验证商品是否存在，商品的启用状态是否启用
@@ -81,6 +88,20 @@ public class CartServiceImpl implements CartService {
             }
         }
         return cartList;
+    }
+
+    @Override
+    public List<Cart> findCartListByUsername(String username) {
+        List<Cart> cartList = (List<Cart>) redisTemplate.boundHashOps(REDIS_CART_LIST).get(username);
+        if (cartList != null) {
+            return cartList;
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
+    public void saveCartListByUsername(List<Cart> cartList, String username) {
+        redisTemplate.boundHashOps(REDIS_CART_LIST).put(username,cartList);
     }
 
 
