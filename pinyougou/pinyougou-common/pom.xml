@@ -9,6 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
+
     <artifactId>pinyougou-common</artifactId>
 
     <dependencies>
@@ -16,7 +17,6 @@
             <groupId>fastdfs_client</groupId>
             <artifactId>fastdfs_client</artifactId>
         </dependency>
-
         <!-- redis 缓存 -->
         <dependency>
             <groupId>redis.clients</groupId>
@@ -25,6 +25,11 @@
         <dependency>
             <groupId>org.springframework.data</groupId>
             <artifactId>spring-data-redis</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
