@@ -18,6 +18,8 @@
 
     <!-- entry-point-ref 入口点引用 -->
     <http use-expressions="false" entry-point-ref="casProcessingFilterEntryPoint">
+        <!--允许匿名方式访问；用户名为anonymousUser-->
+        <intercept-url pattern="/cart/*.do" access="IS_AUTHENTICATED_ANONYMOUSLY"/>
         <intercept-url pattern="/**" access="ROLE_USER"/>
         <csrf disabled="true"/>
         <!-- custom-filter 为过滤器， position 表示将过滤器放在指定的位置上， before
