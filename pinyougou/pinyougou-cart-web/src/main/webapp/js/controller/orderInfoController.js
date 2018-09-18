@@ -25,7 +25,7 @@ app.controller("orderInfoController", function ($scope, cartService, addressServ
             for (var i = 0; i < $scope.addressList.length; i++) {
                 var address = $scope.addressList[i];
                 if (address.isDefault == "1") {
-                    $scope.address == address;
+                    $scope.address = address;
                     break;
                 }
             }
