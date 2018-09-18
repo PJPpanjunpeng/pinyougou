@@ -17,8 +17,8 @@ app.controller("cartController", function ($scope, cartService) {
     };
 
     //增减购物车购买商品数量
-    $scope.addCartToCartList = function (itemId, num) {
-        cartService.addCartToCartList(itemId, num).success(function (response) {
+    $scope.addItemToCartList = function (itemId, num) {
+        cartService.addItemToCartList(itemId, num).success(function (response) {
             if(response.success){
                 //刷新列表
                 $scope.findCartList();

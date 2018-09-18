@@ -47,8 +47,8 @@ public class CartServiceImpl implements CartService {
 
         String sellerId = item.getSellerId();
         Cart cart = findCartBySellerId(cartList, sellerId);
+        //3、如果购买商品对应的商家是不存在的的话；将商品及其商品重新添加到购物车列表中
         if (cart == null) {
-            //3、如果购买商品对应的商家是不存在的的话；将商品及其商品重新添加到购物车列表中
             if (num > 0) {
                 cart = new Cart();
                 cart.setSellerId(sellerId);
@@ -104,6 +104,19 @@ public class CartServiceImpl implements CartService {
         redisTemplate.boundHashOps(REDIS_CART_LIST).put(username,cartList);
     }
 
+    @Override
+    public List<Cart> mergeCartList(List<Cart> cartList1, List<Cart> cartList2) {
+
+        //任何一个集合合并都可；商品不存在则新增，存在则购买数量叠加
+        for (Cart cart: cartList1) {
+            List<TbOrderItem> orderItemList = cart.getOrderItemList();
+            for (TbOrderItem orderItem: orderItemList) {
+                addItemToCartList(cartList2, orderItem.getItemId(), orderItem.getNum());
+            }
+        }
+        return cartList2;
+    }
+
 
     /**
      * 在购物车商品明细列表里面根据商品 id 查找对应的明细
@@ -115,7 +128,7 @@ public class CartServiceImpl implements CartService {
     private TbOrderItem findOrderItemByItemId(List<TbOrderItem> orderItemList, Long itemId) {
         if (orderItemList != null && orderItemList.size() > 0) {
             for (TbOrderItem orderItem : orderItemList) {
-                if (itemId.equals(orderItem.getId())) {
+                if (itemId.equals(orderItem.getItemId())) {
                     return orderItem;
                 }
             }
