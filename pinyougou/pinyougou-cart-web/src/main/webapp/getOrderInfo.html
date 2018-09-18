@@ -166,8 +166,8 @@
                 </div>
                 <div class="step-cont">
                     <ul class="payType">
-                        <li class="selected">微信付款<span title="点击取消选择"></span></li>
-                        <li>货到付款<span title="点击取消选择"></span></li>
+                        <li class="{{(order.paymentType=='1')?'selected':''}}" ng-click="selectPayType('1')">微信付款<span title="点击取消选择"></span></li>
+                        <li class="{{(order.paymentType=='2')?'selected':''}}" ng-click="selectPayType('2')">货到付款<span title="点击取消选择"></span></li>
                     </ul>
                 </div>
                 <div class="hr"></div>

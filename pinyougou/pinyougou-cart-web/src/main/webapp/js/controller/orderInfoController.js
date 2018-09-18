@@ -33,6 +33,7 @@ app.controller("orderInfoController", function ($scope, cartService, addressServ
     };
 
 
+
     //判断地址是否选中的地址
     $scope.isAddressSelected = function (address) {
         if ($scope.address == address) {
@@ -44,6 +45,18 @@ app.controller("orderInfoController", function ($scope, cartService, addressServ
     //选中地址
     $scope.selectAddress = function (address) {
         $scope.address = address;
-    }
+    };
+
+
+
+    //订单
+    $scope.order = {"paymentType":"1"};
+
+
+    //选择支付类型
+    $scope.selectPayType = function(type) {
+        $scope.order.paymentType = type;
+    };
+
 
 });
