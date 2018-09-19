@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE">
-    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
     <title>结算页</title>
 
-    <link rel="stylesheet" type="text/css" href="css/webbase.css"/>
-    <link rel="stylesheet" type="text/css" href="css/pages-getOrderInfo.css"/>
+    <link rel="stylesheet" type="text/css" href="css/webbase.css" />
+    <link rel="stylesheet" type="text/css" href="css/pages-getOrderInfo.css" />
     <script src="plugins/angularjs/angular.min.js"></script>
     <script src="js/base.js"></script>
     <script src="js/service/cartService.js"></script>
@@ -64,8 +64,7 @@
         <div class="checkout-steps">
             <!--收件人信息-->
             <div class="step-tit">
-                <h5>收件人信息<span><a data-toggle="modal" data-target=".edit" data-keyboard="false"
-                                  class="newadd">新增收货地址</a></span></h5>
+                <h5>收件人信息<span><a data-toggle="modal" data-target=".edit" data-keyboard="false" class="newadd">新增收货地址</a></span></h5>
             </div>
             <div class="step-cont">
                 <div class="addressInfo">
@@ -74,8 +73,7 @@
 
                             <div ng-repeat="address in addressList">
                                 <div class="con name {{isAddressSelected(address)?'selected':''}}">
-                                    <a href="javascript:;" ng-click="selectAddress(address)">
-                                        {{address.contact}}
+                                    <a href="javascript:;" ng-click="selectAddress(address)">{{address.contact}}
                                         <span title="点击取消选择">&nbsp;</span>
                                     </a>
                                 </div>
@@ -96,8 +94,7 @@
                         <div class="modal-dialog">
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <button type="button" data-dismiss="modal" aria-hidden="true" class="sui-close">×
-                                    </button>
+                                    <button type="button" data-dismiss="modal" aria-hidden="true" class="sui-close">×</button>
                                     <h4 id="myModalLabel" class="modal-title">添加收货地址</h4>
                                 </div>
                                 <div class="modal-body">
@@ -189,7 +186,7 @@
                                         <div class="seven">7天无理由退货</div>
                                     </li>
                                     <li class="yui3-u-1-12">
-                                        <div class="price">￥{{orderItem.price}}</div>
+                                        <div class="price">￥{{orderItem.price.toFixed(2)}}</div>
                                     </li>
                                     <li class="yui3-u-1-12">
                                         <div class="num">X{{orderItem.num}}</div>
@@ -227,7 +224,7 @@
         <div class="static fr">
             <div class="list">
                 <span><i class="number">{{totalValue.totalNum}}</i>件商品，总商品金额</span>
-                <em class="allprice">{{totalValue.totalMoney.toFixed(2)}}</em>
+                <em class="allprice">¥{{totalValue.totalMoney.toFixed(2)}}</em>
             </div>
             <div class="list">
                 <span>返现：</span>
@@ -244,7 +241,7 @@
         <div class="fc-receiverInfo">寄送至:{{address.address}} 收货人：{{address.contact}} {{address.mobile}}</div>
     </div>
     <div class="submit">
-        <a class="sui-btn btn-danger btn-xlarge" href="#">提交订单</a>
+        <a class="sui-btn btn-danger btn-xlarge" href="#" ng-click="submitOrder()">提交订单</a>
     </div>
 </div>
 <!-- 底部栏位 -->

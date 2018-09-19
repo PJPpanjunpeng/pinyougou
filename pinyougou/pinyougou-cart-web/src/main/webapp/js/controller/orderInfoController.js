@@ -59,4 +59,22 @@ app.controller("orderInfoController", function ($scope, cartService, addressServ
     };
 
 
+    //提交订单
+    $scope.submitOrder = function () {
+        $scope.order.receiverAreaName = $scope.address.address;
+        $scope.order.receiverMobile = $scope.address.mobile;
+        $scope.order.receiver = $scope.address.contact;
+        cartService.submitOrder($scope.order).success(function (response) {
+            if (response.success) {
+                if ($scope.order.paymentType == "1") {
+                    //携带支付业务id，跳转到支付页面
+                    location.href = "pay.html#?outTradeNo="+ response.message;
+                } else {
+                    location.href = "paysuccess.html";
+                }
+            } else {
+                alert(response.message);
+            }
+        })
+    }
 });
