@@ -63,7 +63,7 @@ public class CartController {
             List<Cart> newCartList = cartService.addItemToCartList(cartList, itemId, num);
 
             if ("anonymousUser".equals(username)) {
-                //未登录，将商品加入写回到Cookie
+                //未登录，将商品加入写回到Cookie(Cookie只能保存字符串)
                 String cartListJsonStr = JSON.toJSONString(newCartList);
                 CookieUtils.setCookie(request, response, COOKIE_CART_LIST, cartListJsonStr, COOKIE_CART_LIST_MAX_AGE, true);
             } else {

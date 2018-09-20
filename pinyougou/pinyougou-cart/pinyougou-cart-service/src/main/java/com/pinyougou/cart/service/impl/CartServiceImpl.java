@@ -40,14 +40,15 @@ public class CartServiceImpl implements CartService {
         if (item == null) {
             throw new RuntimeException("商品不存在");
         }
-        //2、判断sku商品是否合法
+        //判断sku商品是否合法
         if (!"1".equals(item.getStatus())) {
             throw new RuntimeException("商品状态不合法");
         }
 
+        //判断商家是否存在于购物车列表
         String sellerId = item.getSellerId();
         Cart cart = findCartBySellerId(cartList, sellerId);
-        //3、如果购买商品对应的商家是不存在的的话；将商品及其商品重新添加到购物车列表中
+        //如果购买商品对应的商家是不存在的的话；将商家及其商品重新添加到购物车列表中
         if (cart == null) {
             if (num > 0) {
                 cart = new Cart();
@@ -65,7 +66,7 @@ public class CartServiceImpl implements CartService {
                 throw new RuntimeException("购买数量不合法");
             }
         } else {
-            //4、如果该商品对应的商家存在在购物车列表中；那么判断商品是否存在若是则购买数量叠加，否则新加入商品到该商家
+            //如果该商品对应的商家存在在购物车列表中；那么判断商品是否存在若是则购买数量叠加，否则新加入商品到该商家
             TbOrderItem orderItem = findOrderItemByItemId(cart.getOrderItemList(), itemId);
             if (orderItem != null) {
                 orderItem.setNum(orderItem.getNum() + num);
