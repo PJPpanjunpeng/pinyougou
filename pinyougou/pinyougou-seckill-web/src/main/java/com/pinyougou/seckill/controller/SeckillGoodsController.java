@@ -40,7 +40,8 @@ public class SeckillGoodsController {
 
     @GetMapping("/findOne")
     public TbSeckillGoods findOne(Long id) {
-        return seckillGoodsService.findOne(id);
+        //return seckillGoodsService.findOne(id);
+        return seckillGoodsService.findSeckillGoodsInRedisById(id);
     }
 
     @PostMapping("/update")

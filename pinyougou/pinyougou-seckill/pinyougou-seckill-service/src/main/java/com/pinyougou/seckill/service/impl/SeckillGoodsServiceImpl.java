@@ -50,6 +50,8 @@ public class SeckillGoodsServiceImpl extends BaseServiceImpl<TbSeckillGoods> imp
         List<TbSeckillGoods> seckillGoodsList = null;
 
         try {
+            //秒杀商品id集合
+            //redisTemplate.boundHashOps(SECKILL_GOODS).keys();
             //从redis中查找
             seckillGoodsList = redisTemplate.boundHashOps(SECKILL_GOODS).values();
         } catch (Exception e) {
@@ -92,5 +94,11 @@ public class SeckillGoodsServiceImpl extends BaseServiceImpl<TbSeckillGoods> imp
             System.out.println("从缓存中读取了秒杀商品列表...");
         }
         return seckillGoodsList;
+    }
+
+    @Override
+    public TbSeckillGoods findSeckillGoodsInRedisById(Long id) {
+
+        return (TbSeckillGoods) redisTemplate.boundHashOps(SECKILL_GOODS).get(id);
     }
 }
