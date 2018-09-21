@@ -5,6 +5,7 @@ import com.pinyougou.pojo.TbSeckillOrder;
 import com.pinyougou.seckill.service.SeckillOrderService;
 import com.pinyougou.vo.PageResult;
 import com.pinyougou.vo.Result;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,7 +14,8 @@ import java.util.List;
 @RestController
 public class SeckillOrderController {
 
-    @Reference
+    //设置远程服务调用超时时间（毫秒）；默认1000
+    @Reference(timeout = 1000)
     private SeckillOrderService seckillOrderService;
 
     @RequestMapping("/findAll")
@@ -76,6 +78,27 @@ public class SeckillOrderController {
     public PageResult search(@RequestBody  TbSeckillOrder seckillOrder, @RequestParam(value = "page", defaultValue = "1")Integer page,
                                @RequestParam(value = "rows", defaultValue = "10")Integer rows) {
         return seckillOrderService.search(page, rows, seckillOrder);
+    }
+
+    @GetMapping("/submitOrder")
+    public Result submitOrder(Long seckillId) {
+
+        try {
+            String username = SecurityContextHolder.getContext().getAuthentication().getName();
+            if (!"anonymousUser".equals(username)) {
+
+                Long orderId = seckillOrderService.submitOrder(username, seckillId);
+                if (orderId != null) {
+                    return Result.ok(orderId.toString());
+                }
+
+            } else {
+                return Result.fail("请先登录");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Result.fail("提交订单失败");
     }
 
 }
