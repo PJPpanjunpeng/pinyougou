@@ -78,4 +78,9 @@ public class SeckillGoodsController {
         return seckillGoodsService.search(page, rows, seckillGoods);
     }
 
+
+    @RequestMapping("/findList")
+    public List<TbSeckillGoods> findList() {
+        return seckillGoodsService.findList();
+    }
 }
