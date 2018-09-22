@@ -5,6 +5,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.pinyougou.common.util.IdWorker;
 import com.pinyougou.common.util.RedisLock;
+import com.pinyougou.mapper.OrderItemMapper;
 import com.pinyougou.mapper.SeckillGoodsMapper;
 import com.pinyougou.mapper.SeckillOrderMapper;
 import com.pinyougou.pojo.TbSeckillGoods;
@@ -108,5 +109,56 @@ public class SeckillOrderServiceImpl extends BaseServiceImpl<TbSeckillOrder> imp
         }
 
         return null;
+    }
+
+    @Override
+    public TbSeckillOrder getSeckillOrderInRedisByOrderId(String orderId) {
+        return (TbSeckillOrder) redisTemplate.boundHashOps((SECKILL_ORDERS)).get(orderId);
+    }
+
+
+    @Override
+    public void saveOrderInRedisToDb(String orderId, String transactionid) {
+        TbSeckillOrder seckillOrder = getSeckillOrderInRedisByOrderId(orderId);
+        if (seckillOrder == null) {
+            throw new RuntimeException("订单不存在");
+        }
+        if (!orderId.equals(seckillOrder.getId().toString())) {
+            throw new RuntimeException("订单不相符");
+        }
+
+        seckillOrder.setPayTime(new Date());
+        seckillOrder.setTransactionId(transactionid);
+        seckillOrder.setStatus("1");//已支付
+        seckillOrderMapper.insertSelective(seckillOrder);
+
+        //删除redis中秒杀订单
+        redisTemplate.boundHashOps(SECKILL_ORDERS).delete(orderId);
+    }
+
+    @Override
+    public void deleteOrderInRedis(String orderId) throws InterruptedException {
+
+        TbSeckillOrder seckillOrder= getSeckillOrderInRedisByOrderId(orderId);
+        if (seckillOrder != null && orderId.equals(seckillOrder.getId().toString())) {
+            //1、删除redis中对应的秒杀订单
+            redisTemplate.boundHashOps(SECKILL_ORDERS).delete(orderId);
+
+            //2、更新订单对应商品库存
+            RedisLock redisLock = new RedisLock(redisTemplate);
+            if (redisLock.lock(seckillOrder.getSeckillId().toString())) {//加分布式锁
+
+                TbSeckillGoods seckillGoods = (TbSeckillGoods) redisTemplate.boundHashOps(SeckillGoodsServiceImpl.SECKILL_GOODS).get(seckillOrder.getSeckillId());
+
+                if (seckillGoods == null) {//如果在redis中不存在，则从数据库中找出来并加回库存后设置到 redis
+                    seckillGoods = seckillGoodsMapper.selectByPrimaryKey(seckillOrder.getSeckillId());
+                }
+                seckillGoods.setStockCount(seckillGoods.getStockCount() + 1);
+
+                redisTemplate.boundHashOps(SeckillGoodsServiceImpl.SECKILL_GOODS).put(seckillGoods.getId(), seckillGoods);
+                //释放分布式锁
+                redisLock.unlock(seckillOrder.getSeckillId().toString());
+            }
+        }
     }
 }

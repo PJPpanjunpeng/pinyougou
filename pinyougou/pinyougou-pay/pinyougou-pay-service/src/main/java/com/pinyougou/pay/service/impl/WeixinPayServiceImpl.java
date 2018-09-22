@@ -82,7 +82,7 @@ public class WeixinPayServiceImpl implements WeixinPayService {
             paramMap.put("mch_id", mch_id);//从微信申请的商户号
             paramMap.put("nonce_str", WXPayUtil.generateNonceStr());//随机字符串
             //paramMap.put("sign","");//微信 sdk 提供有工具类包生成
-            paramMap.put("out_trade_no",outTradeNo);//订单号
+            paramMap.put("out_trade_no", outTradeNo);//订单号
 
             //2、将参数map转换为微信支付需要的xml
             String signedXml = WXPayUtil.generateSignedXml(paramMap, partnerkey);
@@ -101,6 +101,40 @@ public class WeixinPayServiceImpl implements WeixinPayService {
             //5、转换内容为 map 并设置返回结果
             return WXPayUtil.xmlToMap(content);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Map<String, String> closeOrder(String outTradeNo) {
+
+
+        try {
+            //1、组合要发送的参数
+            Map<String, String> paramMap = new HashMap<>();
+            paramMap.put("appid", appid);//从微信申请的公众账号 ID
+            paramMap.put("mch_id", mch_id);//从微信申请的商户号
+            paramMap.put("nonce_str", WXPayUtil.generateNonceStr());//随机字符串
+            //paramMap.put("sign","");//微信 sdk 提供有工具类包生成
+            paramMap.put("out_trade_no", outTradeNo);//订单号
+
+            //2、将参数 map 转换为微信支付需要的 xml
+            String signedXml = WXPayUtil.generateSignedXml(paramMap, partnerkey);
+
+            //3、创建 httpCient 对象并发送信息到微信支付
+            HttpClient httpClient = new HttpClient("https://api.mch.weixin.qq.com/pay/closeorder");
+            httpClient.setHttps(true);
+            httpClient.setXmlParam(signedXml);
+            httpClient.post();
+
+            //4、获取微信支付返回的数据
+            String content = httpClient.getContent();
+            System.out.println("微信关闭订单返回的内容为： " + content);
+
+            //5、转换内容为 map 并设置返回结果
+            return WXPayUtil.xmlToMap(content);
         } catch (Exception e) {
             e.printStackTrace();
         }
